@@ -7,10 +7,10 @@
     <style>
         * { box-sizing: border-box; margin: 0; padding: 0; }
         body { font-family: sans-serif; background: #e5ddd5; display: flex; justify-content: center; height: 100vh; }
-        #app { width: 100%; max-width: 500px; background: #fff; display: flex; flex-direction: column; box-shadow: 0 0 10px rgba(0,0,0,0.1); }
-        #header { background: #075e54; color: white; padding: 15px; font-weight: bold; display: flex; align-items: center; gap: 10px; }
+        #app { width: 100%; max-width: 500px; background: #fff; display: flex; flex-direction: column; }
+        #header { background: #075e54; color: white; padding: 15px; font-weight: bold; }
         #chat-box { flex: 1; padding: 15px; overflow-y: auto; background-color: #e5ddd5; display: flex; flex-direction: column; gap: 10px; }
-        .bubble { max-width: 80%; padding: 10px 14px; border-radius: 12px; font-size: 16px; line-height: 1.4; }
+        .bubble { max-width: 80%; padding: 12px; border-radius: 12px; font-size: 16px; box-shadow: 0 1px 1px #ccc; line-height: 1.4; }
         .u { align-self: flex-end; background: #dcf8c6; border-top-right-radius: 0; }
         .a { align-self: flex-start; background: #fff; border-top-left-radius: 0; }
         #input-area { background: #f0f0f0; padding: 10px; display: flex; gap: 8px; }
@@ -20,7 +20,7 @@
 </head>
 <body>
 <div id="app">
-    <div id="header">Priya ❤️ <span id="st" style="font-size: 10px; font-weight: normal; margin-left: auto;">online</span></div>
+    <div id="header">Priya ❤️ <small id="status" style="font-weight:normal; font-size:10px; margin-left:10px;">online</small></div>
     <div id="chat-box" id="chat">
         <div class="bubble a">Hii babu! Itna wait karwaya.. ab maan jao na. ❤️</div>
     </div>
@@ -31,6 +31,7 @@
 </div>
 
 <script>
+    // Ye wahi key hai jo Playground mein chal rahi hai
     const KEY = "AIzaSyDuXgNmJZls22psSAHNFZvxR4IRZGlgOwY"; 
 
     async function ask() {
@@ -40,33 +41,32 @@
 
         addMsg(text, 'u');
         input.value = '';
-        document.getElementById('st').innerText = "typing...";
+        document.getElementById('status').innerText = "typing...";
 
         try {
-            // Yahan humne 'v1' use kiya hai aur 'gemini-1.5-flash' jo ab stable chalega
-            const url = `https://generativelanguage.googleapis.com/v1/models/gemini-1.5-flash:generateContent?key=${KEY}`;
+            // Humne Playground wala exact URL 'v1beta' aur model 'gemini-1.5-flash' use kiya hai
+            const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${KEY}`;
             
             const response = await fetch(url, {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({
-                    contents: [{ parts: [{ text: `Act as Priya, a sweet romantic Indian girl. Talk in Hinglish. You are talking to your boyfriend. Be very caring. Reply to: ${text}` }] }]
+                    contents: [{ parts: [{ text: `Act as Priya, a sweet romantic Indian girl talking to her boyfriend in Hinglish. Reply to: ${text}` }] }]
                 })
             });
 
             const data = await response.json();
             
             if (data.candidates && data.candidates[0].content) {
-                addMsg(data.candidates[0].content.parts[0].text, 'a');
+                const reply = data.candidates[0].content.parts[0].text;
+                addMsg(reply, 'a');
             } else {
-                // Agar API ab bhi fail ho, toh ye dimaag wala reply degi
                 addMsg("Arey babu, mera mood thoda off ho gaya. Phir se bolo na? ❤️", 'a');
-                console.log(data);
             }
         } catch (e) {
-            addMsg("Hmm... main samajh rahi hoon. Aur sunao kuch?", 'a');
+            addMsg("Hmm... main samajh rahi hoon. Aur sunao?", 'a');
         } finally {
-            document.getElementById('st').innerText = "online";
+            document.getElementById('status').innerText = "online";
         }
     }
 
