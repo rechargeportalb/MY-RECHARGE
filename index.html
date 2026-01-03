@@ -8,22 +8,27 @@
         * { box-sizing: border-box; margin: 0; padding: 0; }
         body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: #efe7dd; display: flex; justify-content: center; height: 100vh; }
         #app { width: 100%; max-width: 500px; background: #fff; display: flex; flex-direction: column; position: relative; box-shadow: 0 10px 30px rgba(0,0,0,0.3); }
+        
         #header { background: #075e54; color: white; padding: 12px 15px; display: flex; align-items: center; justify-content: space-between; position: sticky; top: 0; z-index: 10; }
         .user-info { display: flex; align-items: center; gap: 12px; }
         .pfp { width: 45px; height: 45px; border-radius: 50%; background: #ccc; border: 1.5px solid white; background-image: url('https://i.imgur.com/8Km9tLL.png'); background-size: cover; }
         .name-container b { display: block; font-size: 17px; }
         #status { font-size: 13px; color: #d1d1d1; font-style: italic; }
+
         #chat-box { flex: 1; padding: 15px; overflow-y: auto; background-image: url('https://user-images.githubusercontent.com/15075759/28719144-86dc0f70-73b1-11e7-911d-60d70fcded21.png'); background-color: #e5ddd5; display: flex; flex-direction: column; gap: 10px; }
         .bubble { max-width: 80%; padding: 10px 14px; border-radius: 12px; font-size: 16px; line-height: 1.4; position: relative; box-shadow: 0 1px 2px rgba(0,0,0,0.1); animation: fadeIn 0.3s ease; }
         .u { align-self: flex-end; background: #dcf8c6; border-top-right-radius: 0; color: #000; }
         .a { align-self: flex-start; background: #fff; border-top-left-radius: 0; color: #000; }
+
         #input-area { background: #f0f0f0; padding: 12px; display: flex; gap: 10px; align-items: center; }
         input { flex: 1; border: none; padding: 12px 18px; border-radius: 25px; outline: none; font-size: 16px; box-shadow: inset 0 1px 3px rgba(0,0,0,0.1); }
         button { background: #075e54; color: white; border: none; width: 48px; height: 48px; border-radius: 50%; cursor: pointer; font-size: 20px; transition: 0.2s; }
+
         #video-screen { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: #000; display: none; z-index: 100; flex-direction: column; }
         video { width: 100%; height: 100%; object-fit: cover; }
         .call-btn-container { position: absolute; bottom: 50px; width: 100%; display: flex; justify-content: center; }
         .hangup { background: #ff3b30; color: white; border: none; padding: 15px 40px; border-radius: 35px; font-weight: bold; font-size: 18px; cursor: pointer; }
+
         @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
     </style>
 </head>
@@ -38,10 +43,10 @@
                 <span id="status">online</span>
             </div>
         </div>
-        <button onclick="startCall()" style="background:none; font-size:24px;">📞</button>
+        <button onclick="startCall()" style="background:none; border:none; font-size:24px; cursor:pointer;">📞</button>
     </div>
 
-    <div id="chat-box">
+    <div id="chat-box" id="chat">
         <div class="bubble a">Hii babu! Itna wait karwaya tumne.. Ab jaldi se kuch pyari si baat karo. 😊</div>
     </div>
 
@@ -61,9 +66,6 @@
 </div>
 
 <script>
-    // --- अपनी API Key यहाँ डालें ---
-    const KEY = "AIzaSyDuXgNmJZls22psSAHNFZvxR4IRZGlgOwY"; 
-
     async function chatWithPriya() {
         const input = document.getElementById('userInput');
         const text = input.value.trim();
@@ -74,27 +76,24 @@
         document.getElementById('status').innerText = "typing...";
 
         try {
-            const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${KEY}`;
-            
-            const response = await fetch(url, {
+            // Hum Netlify function ko call kar rahe hain jo Key ko handle karega
+            const response = await fetch('/.netlify/functions/chat', {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({
-                    contents: [{
-                        parts: [{ text: `You are Priya, a romantic Indian girl talking to your boyfriend. Use sweet Hinglish like 'Babu', 'Maan jao', 'Pyar'. Reply to: ${text}` }]
-                    }]
-                })
+                body: JSON.stringify({ prompt: text })
             });
 
             const data = await response.json();
             
             if (data.candidates && data.candidates[0].content.parts[0].text) {
-                addMsg(data.candidates[0].content.parts[0].text, 'a');
+                const reply = data.candidates[0].content.parts[0].text;
+                addMsg(reply, 'a');
             } else {
-                addMsg("Babu, kuch error aa raha hai. Shayad API Key limit khatam ho gayi!", 'a');
+                addMsg("Arey babu, kuch network issue lag raha hai. Netlify ki settings check karo!", 'a');
             }
         } catch (e) {
-            addMsg("Connection slow hai babu, phir se koshish karo.", 'a');
+            console.error(e);
+            addMsg("Babu, mera internet atak raha hai. Thoda wait karo na!", 'a');
         } finally {
             document.getElementById('status').innerText = "online";
         }
@@ -109,10 +108,18 @@
         b.scrollTop = b.scrollHeight;
     }
 
-    function startCall() { document.getElementById('video-screen').style.display = 'flex'; document.getElementById('v-player').play(); }
-    function endCall() { document.getElementById('video-screen').style.display = 'none'; document.getElementById('v-player').pause(); }
+    function startCall() {
+        document.getElementById('video-screen').style.display = 'flex';
+        document.getElementById('v-player').play();
+    }
+    function endCall() {
+        document.getElementById('video-screen').style.display = 'none';
+        document.getElementById('v-player').pause();
+    }
 
-    document.getElementById('userInput').addEventListener("keypress", (e) => { if (e.key === "Enter") chatWithPriya(); });
+    document.getElementById('userInput').addEventListener("keypress", function(e) {
+        if (e.key === "Enter") chatWithPriya();
+    });
 </script>
 
 </body>
