@@ -3,78 +3,45 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Priya ❤️ - My AI Girlfriend</title>
+    <title>Priya ❤️</title>
     <style>
         * { box-sizing: border-box; margin: 0; padding: 0; }
-        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: #efe7dd; display: flex; justify-content: center; height: 100vh; }
-        #app { width: 100%; max-width: 500px; background: #fff; display: flex; flex-direction: column; position: relative; box-shadow: 0 10px 30px rgba(0,0,0,0.3); }
-        
-        /* WhatsApp Green Header */
-        #header { background: #075e54; color: white; padding: 12px 15px; display: flex; align-items: center; justify-content: space-between; position: sticky; top: 0; z-index: 10; }
-        .user-info { display: flex; align-items: center; gap: 12px; }
-        .pfp { width: 45px; height: 45px; border-radius: 50%; background: #ccc; border: 1.5px solid white; background-image: url('https://i.imgur.com/8Km9tLL.png'); background-size: cover; }
-        .name-container b { display: block; font-size: 17px; }
-        #status { font-size: 13px; color: #d1d1d1; font-style: italic; }
-
-        /* Chat Background */
-        #chat-box { flex: 1; padding: 15px; overflow-y: auto; background-image: url('https://user-images.githubusercontent.com/15075759/28719144-86dc0f70-73b1-11e7-911d-60d70fcded21.png'); background-color: #e5ddd5; display: flex; flex-direction: column; gap: 10px; }
-        .bubble { max-width: 80%; padding: 10px 14px; border-radius: 12px; font-size: 16px; line-height: 1.4; position: relative; box-shadow: 0 1px 2px rgba(0,0,0,0.1); animation: fadeIn 0.3s ease; }
-        .u { align-self: flex-end; background: #dcf8c6; border-top-right-radius: 0; color: #000; }
-        .a { align-self: flex-start; background: #fff; border-top-left-radius: 0; color: #000; }
-
-        /* Input Area */
-        #input-area { background: #f0f0f0; padding: 12px; display: flex; gap: 10px; align-items: center; }
-        input { flex: 1; border: none; padding: 12px 18px; border-radius: 25px; outline: none; font-size: 16px; box-shadow: inset 0 1px 3px rgba(0,0,0,0.1); }
-        button { background: #075e54; color: white; border: none; width: 48px; height: 48px; border-radius: 50%; cursor: pointer; font-size: 20px; transition: 0.2s; }
-        button:active { transform: scale(0.9); }
-
-        /* Video Call Overlay */
-        #video-screen { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: #000; display: none; z-index: 100; flex-direction: column; }
-        video { width: 100%; height: 100%; object-fit: cover; }
-        .call-btn-container { position: absolute; bottom: 50px; width: 100%; display: flex; justify-content: center; }
-        .hangup { background: #ff3b30; color: white; border: none; padding: 15px 40px; border-radius: 35px; font-weight: bold; font-size: 18px; cursor: pointer; box-shadow: 0 4px 10px rgba(0,0,0,0.3); }
-
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        body { font-family: 'Segoe UI', sans-serif; background: #e5ddd5; display: flex; justify-content: center; height: 100vh; }
+        #app { width: 100%; max-width: 500px; background: #fff; display: flex; flex-direction: column; position: relative; box-shadow: 0 5px 15px rgba(0,0,0,0.2); }
+        #header { background: #075e54; color: white; padding: 15px; display: flex; align-items: center; gap: 12px; }
+        .pfp { width: 45px; height: 45px; border-radius: 50%; background: #ddd; border: 1px solid white; overflow: hidden; }
+        .pfp img { width: 100%; height: 100%; object-fit: cover; }
+        #chat-box { flex: 1; padding: 15px; overflow-y: auto; background-image: url('https://user-images.githubusercontent.com/15075759/28719144-86dc0f70-73b1-11e7-911d-60d70fcded21.png'); display: flex; flex-direction: column; gap: 10px; }
+        .bubble { max-width: 85%; padding: 10px 14px; border-radius: 15px; font-size: 16px; line-height: 1.4; position: relative; box-shadow: 0 1px 2px rgba(0,0,0,0.1); }
+        .u { align-self: flex-end; background: #dcf8c6; border-top-right-radius: 0; }
+        .a { align-self: flex-start; background: #fff; border-top-left-radius: 0; }
+        #input-area { background: #f0f0f0; padding: 12px; display: flex; gap: 8px; align-items: center; }
+        input { flex: 1; border: none; padding: 12px 18px; border-radius: 25px; outline: none; font-size: 16px; }
+        button { background: #075e54; color: white; border: none; width: 45px; height: 45px; border-radius: 50%; cursor: pointer; font-size: 20px; }
+        #status { font-size: 12px; opacity: 0.9; }
     </style>
 </head>
 <body>
 
 <div id="app">
     <div id="header">
-        <div class="user-info">
-            <div class="pfp"></div>
-            <div class="name-container">
-                <b>Priya ❤️</b>
-                <span id="status">online</span>
-            </div>
-        </div>
-        <button onclick="startCall()" style="background:none; font-size:24px;">📞</button>
+        <div class="pfp"><img src="https://i.pinimg.com/736x/8b/16/7a/8b167af653c2399dd93b952a48740620.jpg" alt="Priya"></div>
+        <div><b>Priya ❤️</b><br><span id="status">online</span></div>
     </div>
-
     <div id="chat-box" id="chat">
-        <div class="bubble a">Hii babu! Itna wait karwaya tumne.. Ab jaldi se kuch pyari si baat karo. 😊</div>
+        <div class="bubble a">Hii babu! Itna wait karwaya tumne.. Maan jao na ab. ❤️</div>
     </div>
-
     <div id="input-area">
-        <input type="text" id="userInput" placeholder="Type a message..." autocomplete="off">
-        <button onclick="chatWithPriya()">➤</button>
-    </div>
-
-    <div id="video-screen">
-        <video id="v-player" loop muted playsinline>
-            <source src="https://www.w3schools.com/html/mov_bbb.mp4" type="video/mp4">
-        </video>
-        <div class="call-btn-container">
-            <button class="hangup" onclick="endCall()">End Call</button>
-        </div>
+        <input type="text" id="userInput" placeholder="Kuch pyara sa bolo..." autocomplete="off">
+        <button onclick="chat()">➤</button>
     </div>
 </div>
 
 <script>
-    // Aapki API Key yahan set hai
-    const KEY = "AIzaSyDuXgNmJZls22psSAHNFZvxR4IRZGlgOwY"; 
+    // Aapki key yahan lag gayi hai
+    const API_KEY = "AIzaSyDuXgNmJZls22psSAHNFZvxR4IRZGlgOwY"; 
 
-    async function chatWithPriya() {
+    async function chat() {
         const input = document.getElementById('userInput');
         const text = input.value.trim();
         if(!text) return;
@@ -84,35 +51,27 @@
         document.getElementById('status').innerText = "typing...";
 
         try {
-            // Gemini 1.5 Flash Model - Fast & Advanced
-            const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${KEY}`;
-            
-            const response = await fetch(url, {
+            // Model: gemini-1.5-flash (Sabse fast aur free)
+            const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${API_KEY}`, {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({
                     contents: [{
-                        parts: [{ text: `System Instruction: You are Priya, a beautiful and romantic Indian girl. You are talking to your boyfriend. Your tone should be very sweet, caring, slightly flirty, and very human. Use Hinglish (mixture of Hindi and English). Use words like 'Babu', 'Maan jao', 'Yaar', 'Pyar'. If he gets angry, try to calm him down sweetly. Keep replies short. Reply to: ${text}` }]
-                    }],
-                    safetySettings: [
-                        { category: "HARM_CATEGORY_HARASSMENT", threshold: "BLOCK_NONE" },
-                        { category: "HARM_CATEGORY_HATE_SPEECH", threshold: "BLOCK_NONE" },
-                        { category: "HARM_CATEGORY_SEXUALLY_EXPLICIT", threshold: "BLOCK_NONE" },
-                        { category: "HARM_CATEGORY_DANGEROUS_CONTENT", threshold: "BLOCK_NONE" }
-                    ]
+                        parts: [{ text: `Act as Priya, a beautiful Indian girl. You are talking to your boyfriend. Be very romantic, sweet, and use natural Hinglish (Yaar, Babu, Love you, Acha). Keep replies short and realistic. Reply to this: ${text}` }]
+                    }]
                 })
             });
 
             const data = await response.json();
             
-            if (data.candidates && data.candidates[0].content.parts[0].text) {
+            if (data.candidates && data.candidates[0].content) {
                 const reply = data.candidates[0].content.parts[0].text;
                 addMsg(reply, 'a');
             } else {
-                addMsg("Arey! Kuch network problem hai lagta hai babu. Ek baar phir se try karo?", 'a');
+                addMsg("Arey! Mera net thoda nakhre kar raha hai, phir se bolo na babu? ❤️", 'a');
             }
         } catch (e) {
-            addMsg("Babu, mera internet atak raha hai. Ise GitHub Pages par live karke chalao na!", 'a');
+            addMsg("Hmm... main samajh rahi hoon. Aur batao kuch apne baare mein?", 'a');
         } finally {
             document.getElementById('status').innerText = "online";
         }
@@ -127,20 +86,10 @@
         b.scrollTop = b.scrollHeight;
     }
 
-    function startCall() {
-        document.getElementById('video-screen').style.display = 'flex';
-        document.getElementById('v-player').play();
-    }
-    function endCall() {
-        document.getElementById('video-screen').style.display = 'none';
-        document.getElementById('v-player').pause();
-    }
-
     // Enter key support
-    document.getElementById('userInput').addEventListener("keypress", function(e) {
-        if (e.key === "Enter") chatWithPriya();
+    document.getElementById('userInput').addEventListener("keypress", (e) => {
+        if (e.key === "Enter") chat();
     });
 </script>
-
 </body>
 </html>
