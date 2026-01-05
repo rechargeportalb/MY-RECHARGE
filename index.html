@@ -22,7 +22,7 @@
 
         #input-area { background: #f0f0f0; padding: 12px; display: flex; gap: 10px; align-items: center; }
         input { flex: 1; border: none; padding: 12px 18px; border-radius: 25px; outline: none; font-size: 16px; box-shadow: inset 0 1px 3px rgba(0,0,0,0.1); }
-        button { background: #075e54; color: white; border: none; width: 48px; height: 48px; border-radius: 50%; cursor: pointer; font-size: 20px; transition: 0.2s; }
+        button#sendBtn { background: #075e54; color: white; border: none; width: 48px; height: 48px; border-radius: 50%; cursor: pointer; font-size: 20px; transition: 0.2s; }
 
         #video-screen { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: #000; display: none; z-index: 100; flex-direction: column; }
         video { width: 100%; height: 100%; object-fit: cover; }
@@ -46,18 +46,18 @@
         <button onclick="startCall()" style="background:none; border:none; font-size:24px; cursor:pointer;">📞</button>
     </div>
 
-    <div id="chat-box" id="chat">
+    <div id="chat-box">
         <div class="bubble a">Hii babu! Itna wait karwaya tumne.. Ab jaldi se kuch pyari si baat karo. 😊</div>
     </div>
 
     <div id="input-area">
         <input type="text" id="userInput" placeholder="Type a message..." autocomplete="off">
-        <button onclick="chatWithPriya()">➤</button>
+        <button id="sendBtn" onclick="chatWithPriya()">➤</button>
     </div>
 
     <div id="video-screen">
         <video id="v-player" loop muted playsinline>
-            <source src="https://www.istockphoto.com/en/video/webcam-view-of-eastern-business-woman-having-virtual-meeting-video-conference-call-gm2166378329-586484923" type="video/mp4">
+            <source src="https://media.istockphoto.com/id/2166378329/video/webcam-view-of-eastern-business-woman-having-virtual-meeting-video-conference-call-videocall.mp4?s=mp4-640x640-is&k=20&c=cIHlFOMPVKXQGNA-MnSSyzoiyv2_GAIddyc3Y2VxvbU=" type="video/mp4">
         </video>
         <div class="call-btn-container">
             <button class="hangup" onclick="endCall()">End Call</button>
@@ -76,8 +76,8 @@
         document.getElementById('status').innerText = "typing...";
 
         try {
-            // Hum Netlify function ko call kar rahe hain jo Key ko handle karega
-            const response = await fetch('/.netlify/functions/chat', {
+            // Humne yahan URL ko sahi karke '/.netlify/functions/gemini' kar diya hai
+            const response = await fetch('/.netlify/functions/gemini', {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({ prompt: text })
@@ -85,6 +85,7 @@
 
             const data = await response.json();
             
+            // Gemini API response structure ke hisaab se data nikalna
             if (data.candidates && data.candidates[0].content.parts[0].text) {
                 const reply = data.candidates[0].content.parts[0].text;
                 addMsg(reply, 'a');
@@ -121,7 +122,5 @@
         if (e.key === "Enter") chatWithPriya();
     });
 </script>
-
 </body>
 </html>
-
